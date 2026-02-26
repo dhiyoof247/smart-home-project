@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Home Arduino Project</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<style>
+/* ================= Global Styles ================= */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{color:white;overflow-x:hidden;background:#0f2027;position:relative;}
+#particles-js{position:fixed;width:100%;height:100%;top:0;left:0;z-index:-1;}
+
+/* Navigation */
+nav{position:fixed;top:0;width:100%;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);z-index:1000;}
+nav h1{font-weight:700;font-size:1.8rem;}
+nav a{color:white;text-decoration:none;margin-left:20px;transition:0.3s;font-weight:600;}
+nav a:hover{color:#00f2ff;}
+
+/* Header */
+header{height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:20px;}
+header h2{font-size:3rem;font-weight:800;animation:fadeInDown 1.5s ease;}
+header p{margin-top:20px;font-size:1.2rem;opacity:0.9;animation:fadeInUp 2s ease;}
+@keyframes fadeInDown{from{opacity:0; transform:translateY(-50px);}to{opacity:1; transform:translateY(0);}}
+@keyframes fadeInUp{from{opacity:0; transform:translateY(50px);}to{opacity:1; transform:translateY(0);}}
+
+/* Sections */
+section{padding:100px 20px;max-width:1000px;margin:auto;}
+.card{background:rgba(255,255,255,0.08);padding:30px;margin:30px 0;border-radius:20px;backdrop-filter:blur(10px);transform:translateY(50px);opacity:0;transition:all 1s ease;}
+.card.show{transform:translateY(0);opacity:1;}
+.card h2{color:#00f2ff;margin-bottom:15px;}
+.card:hover{transform: translateY(-10px);box-shadow:0 0 30px #00f2ff;}
+
+/* Buttons */
+button{margin-top:20px;padding:12px 25px;border:none;border-radius:30px;background:#00f2ff;color:black;font-weight:600;cursor:pointer;transition:0.3s;}
+button:hover{background:white;}
+
+/* Smart Home Mobile App */
+.phone{width:280px;margin:30px auto;padding:25px;border-radius:30px;background:#111;box-shadow:0 0 30px rgba(0,0,0,0.6);text-align:center;}
+.phone h4{margin-bottom:20px;}
+.bulb-app,.fan-app{width:70px;height:70px;margin:15px auto;border-radius:50%;background:#444;transition:0.4s ease;}
+.bulb-app.on{background:yellow;box-shadow:0 0 30px yellow,0 0 60px yellow,0 0 90px yellow;}
+.fan-app.on{background:#00f2ff;box-shadow:0 0 30px #00f2ff,0 0 60px #00f2ff,0 0 90px #00f2ff;animation:spin 1s linear infinite;}
+@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+
+.switch{position:relative;display:inline-block;width:60px;height:34px;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;cursor:pointer;background-color:#555;border-radius:34px;top:0;left:0;right:0;bottom:0;transition:.4s;}
+.slider:before{position:absolute;content:"";height:26px;width:26px;left:4px;bottom:4px;background-color:white;border-radius:50%;transition:.4s;}
+input:checked + .slider{background-color:#00f2ff;}
+input:checked + .slider:before{transform:translateX(26px);}
+
+/* Power Meter */
+.power-meter{width:200px;height:20px;background:#555;border-radius:10px;margin:15px auto;overflow:hidden;}
+.power-fill{width:0%;height:100%;background:#00f2ff;border-radius:10px;transition:width 0.5s ease;}
+
+/* Footer */
+footer{text-align:center;padding:30px;background:rgba(0,0,0,0.7);font-weight:600;letter-spacing:0.5px;}
+
+/* Responsive */
+@media(max-width:768px){header h2{font-size:2rem;}}
+</style>
+</head>
+<body>
+
+<div id="particles-js"></div>
+
+<nav>
+<h1>🤖 RoboTech</h1>
+<div>
+<a href="#about">About</a>
+<a href="#tech">Technology</a>
+<a href="#features">Features</a>
+<a href="#smarthome">Smart Home</a>
+</div>
+</nav>
+
+<header>
+<h2>Next Generation Smart Home</h2>
+<p>Automation • AI • IoT • Arduino</p>
+</header>
+
+<section id="about">
+<div class="card">
+<h2>About The Project</h2>
+<p>This project uses an <strong>Arduino Uno R3</strong> to create a Smart Home system that allows remote control of lights, fans, and other appliances with a mobile-app interface.</p>
+</div>
+</section>
+
+<section id="tech">
+<div class="card">
+<h2>Technologies Used</h2>
+<ul>
+<li>Arduino Uno R3</li>
+<li>Relay Module</li>
+<li>Bluetooth Module (HC-05)</li>
+<li>Mobile App Interface</li>
+<li>IoT Communication</li>
+</ul>
+</div>
+</section>
+
+<section id="features">
+<div class="card">
+<h2>Key Features</h2>
+<ul>
+<li>Remote ON/OFF Control</li>
+<li>Energy Saving System</li>
+<li>Mobile App Controlled</li>
+<li>Safe and Low-Cost Design</li>
+</ul>
+</div>
+</section>
+
+<section id="smarthome">
+<div class="card">
+<h2>🏠 Smart Home Control Panel</h2>
+<p>Simulate control of multiple home appliances using Arduino Uno R3.</p>
+
+<div class="phone">
+<h4>Living Room Light</h4>
+<div class="bulb-app" id="bulbLiving"></div>
+<label class="switch">
+<input type="checkbox" id="toggleLiving" onchange="toggleDevice('bulbLiving','toggleLiving')">
+<span class="slider"></span>
+</label>
+
+<h4>Bedroom Light</h4>
+<div class="bulb-app" id="bulbBedroom"></div>
+<label class="switch">
+<input type="checkbox" id="toggleBedroom" onchange="toggleDevice('bulbBedroom','toggleBedroom')">
+<span class="slider"></span>
+</label>
+
+<h4>Fan</h4>
+<div class="fan-app" id="fanLiving"></div>
+<label class="switch">
+<input type="checkbox" id="toggleFan" onchange="toggleDevice('fanLiving','toggleFan')">
+<span class="slider"></span>
+</label>
+
+<h4>Power Meter</h4>
+<div class="power-meter">
+<div class="power-fill" id="powerFill"></div>
+</div>
+
+<h4>Demo Video</h4>
+<iframe width="250" height="150" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Demo Video" frameborder="0" allowfullscreen style="border-radius:15px;"></iframe>
+
+<h4>Circuit Diagram</h4>
+<img src="https://via.placeholder.com/250x150.png?text=Circuit+Diagram" alt="Circuit Diagram" style="border-radius:15px;margin-top:10px;">
+</div>
+</div>
+</section>
+
+<footer>
+© 2026 DHIYOOF AHAMMED ACHAMBATTU | Arduino Uno R3 Project
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script>
+// Particle.js config
+particlesJS('particles-js', {
+"particles": {"number":{"value":80,"density":{"enable":true,"value_area":800}},"color":{"value":"#00f2ff"},"shape":{"type":"circle"},"opacity":{"value":0.5,"random":true},"size":{"value":3,"random":true},"line_linked":{"enable":true,"distance":150,"color":"#00f2ff","opacity":0.4,"width":1},"move":{"enable":true,"speed":2,"direction":"none","random":false,"straight":false,"out_mode":"out"}},
+"interactivity":{"detect_on":"canvas","events":{"onhover":{"enable":true,"mode":"repulse"},"onclick":{"enable":true,"mode":"push"}}},"retina_detect":true
+});
+
+// Scroll reveal
+const cards = document.querySelectorAll('.card');
+window.addEventListener('scroll', () => {
+cards.forEach(card => {
+const cardTop = card.getBoundingClientRect().top;
+const triggerPoint = window.innerHeight - 100;
+if(cardTop < triggerPoint){card.classList.add('show');}
+});
+});
+
+// Device toggle + power meter
+function toggleDevice(deviceId, toggleId){
+const device=document.getElementById(deviceId);
+const toggle=document.getElementById(toggleId);
+const power=document.getElementById("powerFill");
+if(toggle.checked){device.classList.add("on");} else {device.classList.remove("on");}
+let usage=0;
+if(document.getElementById("toggleLiving").checked) usage+=30;
+if(document.getElementById("toggleBedroom").checked) usage+=20;
+if(document.getElementById("toggleFan").checked) usage+=50;
+if(usage>100) usage=100;
+power.style.width=usage+"%";
+}
+</script>
+
+</body>
+</html>
